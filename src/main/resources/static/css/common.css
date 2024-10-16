@@ -1,0 +1,153 @@
+@font-face {
+  font-family: 'icomoon';
+  src:  url('../fonts/icomoon.eot?utm0ah');
+  src:  url('../fonts/icomoon.eot?utm0ah#iefix') format('embedded-opentype'),
+    url('../fonts/icomoon.ttf?utm0ah') format('truetype'),
+    url('../fonts/icomoon.woff?utm0ah') format('woff'),
+    url('../fonts/icomoon.svg?utm0ah#icomoon') format('svg');
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+.w  {
+	width: 1200px;
+	margin: 0 auto;
+}
+.style_blue {
+	color: blue;
+}
+.style_red {
+	color: red;
+}
+/*快捷导航模块shortcut*/
+.shortcut {
+	font-size: 14px;
+	background-color: #f1f1f1;
+	padding-left:10px;
+}
+.shortcut_right {
+	float: right;
+}
+.shortcut_right ul li {
+	float: left;
+	padding: 0 40px;
+	color: #B1191A;
+}
+/*头部模块header制作*/
+.header {
+	position: relative;
+	height: 105px;
+}
+.logo {
+	position: absolute;
+	top: 0px;
+	left: 30px;
+	width: 171px;
+	height: 105px;
+}
+.logo img {
+	height: 100%;
+}
+.search {
+	position: absolute;
+	left: 300px;
+	top: 25px;
+	width: 538px;
+	height: 45px;
+	border: 2px solid #b1191a;
+}
+.search input {
+	float: left;
+	width: 454px;
+	height: 41px;
+	padding-left: 10px;
+}
+.search button {
+	float: right;
+	width: 80px;
+	height: 42px;
+	background-color: #b1191a;
+	font-size: 16px;
+	color: #FFFFFF;
+}
+.favorite {
+	position: absolute;
+	top: 25px;
+	right: 60px;
+	width: 140px;
+	height: 35px;
+	line-height: 35px;
+	text-align: center;
+	border: 1px solid #dfdfdf;
+	background-color: #f7f7f7;
+	
+}
+.favorite::before {
+	font-family: 'icomoon';
+	content: '\e905';
+	margin-right: 10px;
+	color: #B1191A;
+}
+.favorite::after {
+	font-family: 'icomoon';
+	content: '\e903';
+	margin-left: 10px;
+}
+.count {
+	position: absolute;
+	top: -5px;
+	left: 105px;
+	height: 14px;
+	line-height: 14px;
+	color: #FFFFFF;
+	background-color: #e60012;
+	padding: 0 5px;
+	border-radius: 7px 7px 7px  0;
+}
+/*导航栏模块制作nav*/
+.nav {
+	height: 47px;
+	border-bottom: 2px solid #B1191A;
+}
+.navitems ul li {
+	float: left;
+}
+.navitems ul li a {
+	display: block;
+	height: 45px;
+	text-align: center;
+	line-height: 45px;
+	font-size: 16px;
+	padding: 0 52px;
+}
+.footer {
+	background-color: #CCCCCC;
+	text-align: center;
+}
+.footer .footer_left {
+	float: left;
+	width: 200px;
+}
+.footer .footer_left a {
+	background-color: cornsilk;
+	border-radius: 2px;
+	color: red;
+	border: 2px solid #666;
+}
+.footer .footer_right {
+	float: right;
+}
+.footer .footer_left p{
+	font-size: 16px;
+}
+.footer .footer_right p:first-child {
+	margin-top: 20px;
+}
+.footer .footer_right p {
+	width: 1000px;
+	height: 45px;
+	line-height: 45px;
+	font-size:30px ;
+	font-weight: 700;
+	font-family: "宋体";
+}

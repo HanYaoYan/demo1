@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>用户登录</title>
+    <link rel="stylesheet" href="/css/base.css" />
+    <link rel="stylesheet" href="/css/common.css" />
+    <link rel="stylesheet" href="/css/login.css" />
+    <link rel="shortcut icon" href="/img/favicon.ico" />
+</head>
+<body>
+<header class="w">
+    <div class="log">
+        <a href=""><img src="/img/logo.png" alt=""/></a>
+    </div>
+</header>
+<div class="registerarea w">
+    <h3>登录
+        <div class="login">没有账户，去<a href="/auth/register">注册</a></div>
+    </h3>
+    <div class="re-form">
+        <form id="loginForm" action="/Login_submit" method="post">
+            <ul>
+                <li>
+                    <label>用户名:</label>
+                    <input type="text" id="username" name="username" class="inp" autocomplete="off" placeholder="请输入用户名" required />
+                    <span id="usernameError" class="error"></span>
+                </li>
+                <li>
+                    <label>登陆密码:</label>
+                    <input type="password" id="password" name="password" class="inp" placeholder="请输入密码" required />
+                    <span id="passwordError" class="error"></span>
+                </li>
+                <li>
+                    <input type="submit" value="登录" class="btn" />
+                </li>
+            </ul>
+        </form>
+        <p th:text="${error}" style="color: red;"></p>
+    </div>
+</div>
+
+</body>
+</html>
