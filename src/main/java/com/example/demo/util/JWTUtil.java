@@ -7,13 +7,15 @@ package com.example.demo.util;
  * 4. isTokenExpired() 接受jwts令牌并验证是否失效
  * 5. validateToken() 接受jwts令牌并验证是否不可用
  */
-//以下包我已经在java项目依赖中用maven进行导入,并没有在pom中进行显式依赖
+import javax.crypto.spec.SecretKeySpec;
+import javax.crypto.SecretKey;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.stereotype.Component;
 
+import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.util.Base64;
 import java.util.Date;
@@ -46,12 +48,14 @@ public class JWTUtil {
         Date now = new Date();
         Date expirationDate = new Date(now.getTime() + expirationTime);
 
-       Jwts.builder().setSubject(username);
-       Jwts.builder().setIssuedAt(now);
-       Jwts.builder().setExpiration(expirationDate);
-       Jwts.builder().signWith(SignatureAlgorithm.HS512, SECRET_KEY);
-       String jwt=Jwts.builder().compact();
-        return jwt;
+        byte[] key=SECRET_KEY.getBytes(StandardCharsets.UTF_8);
+        SecretKey secretKey=new SecretKeySpec(key,"HmacSHA256");
+        return Jwts.builder()
+                .setSubject(username)
+                .setIssuedAt(now)
+                .signWith(secretKey)
+                .setExpiration(expirationDate)
+                .compact();
     }
 
     /**
