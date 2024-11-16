@@ -64,9 +64,9 @@
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>8.0.32</version> <!-- 请使用实际版本 -->
+            <version>8.0.32</version>
             <scope>system</scope>
-            <systemPath>D:\mysql-connector-j-8.0.32\mysql-connector-j-8.0.32.jar</systemPath> <!-- 请根据实际路径调整 -->
+            <systemPath>${project.basedir}/libs/mysql-connector-j-8.0.32.jar</systemPath>
         </dependency>
 
         <!-- Spring Data JPA -->

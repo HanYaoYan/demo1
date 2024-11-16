@@ -3,6 +3,7 @@ package com.example.demo.service;
  * 这是一个用户的服务端类,用于对数据库进行一些复杂的操作
  */
 
+import com.example.demo.Repository.UserRepository;
 import com.example.demo.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

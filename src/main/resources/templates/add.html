@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>增加数据</title>
+    <link rel="shortcut icon" href="img/favicon1.ico" />
+    <link rel="stylesheet" type="text/css" href="css/base.css" />
+    <link rel="stylesheet" type="text/css" href="css/common.css"/>
+    <link rel="stylesheet" type="text/css" href="css/add.css"/>
+    <script>
+        function validateForm() {
+            const dataName = document.getElementById('dataName').value;
+            const dataType = document.getElementById('dataType').value;
+
+            if (!dataName) {
+                alert('请输入添加的数据名称');
+                return false;
+            }
+            if (!dataType) {
+                alert('请选择导入的数据类型');
+                return false;
+            }
+
+            // 只有当数据类型为文本时，才需要检查文本信息
+            if (dataType === '文本') {
+                const dataInfo = document.getElementById('textInfo').value;
+                if (!dataInfo) {
+                    alert('请导入数据');
+                    return false;
+                }
+            }
+
+            return true; // 验证通过
+        }
+
+        function updateDataInfoPlaceHolder() {
+            const dataType = document.getElementById('dataType').value;
+            document.getElementById('textInfoInput').style.display
+                = (dataType === '文本') ?'block' : 'none';
+            document.getElementById('FileInfoInput').style.display
+                = (dataType === '文件') ? 'block' : 'none';
+
+
+            // 动态更新 required 属性（若需要的输入为文本，则一定要输入）
+            const textInfo = document.getElementById('textInfo');
+            if (dataType === '文本') {
+                textInfo.setAttribute('required', 'required');
+            } else {
+                textInfo.removeAttribute('required');
+            }
+        }
+        //获取时间的函数
+        function getLocalTime() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+        }
+        //页面初始化函数
+        window.onload = function() {
+            const submitTimeDisplay = document.getElementById('submitTime');
+            const time = document.getElementById('hiddenSubmitTime');
+            setInterval(() => {
+                const currentTime = getLocalTime();
+                submitTimeDisplay.textContent = currentTime; // 更新显示内容
+                time.value = currentTime;
+            }, 1000);
+        }
+        //确认文件输入
+        function confirmFile() {
+            const imageFile = document.getElementById('File').files[0];
+            if (imageFile) {
+                alert("文件选择成功: " + imageFile.name);
+            } else {
+                alert("请先选择一个文件！");
+            }
+        }
+
+        function uploadImage(event) {
+            event.preventDefault(); // 阻止默认表单提交
+
+            if (!validateForm()) {
+                return; // 验证失败时停止执行
+            }
+
+            //悬着带有表单属性的DOM
+            const form = document.querySelector('.re-form');
+            const imageData = new FormData(form);
+
+            fetch('/add', {
+                method: 'POST',
+                body: imageData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    alert("上传成功！");
+                    console.log(data);
+                    form.reset(); // 清空表单
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('上传失败，请重试');
+                });
+
+        }
+    </script>
+</head>
+<body>
+<header class="w">
+    <div class="log">
+        <a href="index.html"><img src="img/logo1.png" alt="Logo" /></a>
+    </div>
+</header>
+<div class="add w clearfix">
+    <h1>增加数据</h1>
+    <form class="re-form" onsubmit="uploadImage(event)">
+        <ul class="clearfix w">
+            <li>
+                <label for="dataName">数据名称:</label>
+                <input type="text" id="dataName" name="dataName" class="inp" placeholder="请输入数据名称" required />
+            </li>
+            <li>
+                <label for="dataType">数据类型:</label>
+                <select id="dataType" name="dataType" class="inp" required onchange="updateDataInfoPlaceHolder()">
+                    <option value="">请选择数据类型</option>
+                    <option value="文本">文本</option>
+                    <option value="文件">文件</option>
+                </select>
+            </li>
+            <li id="textInfoInput" style="display:none;">
+                <label for="textInfo">文本信息:</label>
+                <textarea id="textInfo" name="dataInfo" class="inp" placeholder="请输入数据信息" required></textarea>
+            </li>
+            <li id="FileInfoInput" style="display:none;">
+                <label for="FileInfo">文件信息：</label>
+                <input type="file" id="FileInfo" name="File"
+                       class="inp" accept="/*" placeholder="请提交文件" />
+                <button type="button" onclick="confirmFile()">确认文件</button>
+            </li>
+            <li style="display:none;">
+                <input type="hidden" name="hiddenSubmitTime" id="hiddenSubmitTime">
+            </li>
+            <li>
+                <label for="submitTime">提交时间:</label>
+                <span id="submitTime" name="submitTime" class="inp"></span>
+            </li>
+            <li>
+                <input type="submit" value="确认" class="btn" />
+            </li>
+        </ul>
+    </form>
+</div>
+</body>
+</html>

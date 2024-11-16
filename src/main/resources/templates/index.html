@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<script>
+	var username="[[${username1}]]";
+
+	window.onload= function (message){
+		alert("欢迎使用数据交换系统，"+username);
+	}
+</script>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>功能页面</title>
+		<link rel="shortcut icon" href="img/favicon1.ico" />
+		<link rel="stylesheet" type="text/css" href="css/base.css" />
+		<link rel="stylesheet" type="text/css" href="css/common.css"/>
+		<link rel="stylesheet" type="text/css" href="css/choice.css"/>
+	</head>
+	<body>
+		<header class="w">
+			<div class="log">
+				<a href="index.html"><img src="img/logo1.png" /></a>
+			</div>
+		</header>
+		<div class="choice w">
+			<h1>欢迎登录XXX系统</h1>
+			<ul class="clearfix">
+				<li>
+					<a href="/add">
+						<h2>增加</h2>
+					</a>
+				</li>
+				<li>
+					<a href="/remove">
+						<h2>删除</h2>
+					</a>
+				</li>
+				<li>
+					<a href="modify.html">
+						<h2>修改</h2>
+					</a>
+				</li>
+				<li>
+					<a href="search.html">
+						<h2>查找</h2>
+					</a>
+				</li>
+			</ul>
+		</div>
+	</body>
+</html>

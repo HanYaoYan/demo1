@@ -1,4 +1,4 @@
-package com.example.demo.service;
+package com.example.demo.Repository;
 /**
  * 采用Hibernate框架,使用对象关系映射来管理数据库
  * 该类负责直接与数据库进行交户,进行一些简单的插入读取与删除操作

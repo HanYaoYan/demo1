@@ -33,6 +33,11 @@ public class FormController {
         return "register";
     }
 
+    /**
+     *接收welcome请求，返回主页面
+     * @param model 由于绝大部分调用welcome时都是重定向，而每次重定向后model都是空，因此每次重定向前要将想保留的数据要么保存在flash中，要么保存在url中
+     * @return
+     */
     @GetMapping("/welcome")
     public String showWelcome(ModelMap model) {
         //从redirectAttributes中获取flash数据
@@ -40,17 +45,31 @@ public class FormController {
         //将其添加到model中以传递给视图
         model.addAttribute("username1", username1);
 
-        return "welcome";
+        return "index";
     }
 
     @PostMapping("/submit")
-    public String createuser(@RequestParam(value="password")String password,@RequestParam(value="username") String username, @RequestParam(value="repassword") String repassword, RedirectAttributes redirectAttributes) {
+    public String createuser(@RequestParam(value="password")String password,
+                             @RequestParam(value="username") String username,
+                             @RequestParam(value="repassword") String repassword,
+                             RedirectAttributes redirectAttributes,
+                             HttpServletResponse response) {
 
         //将表单传入数据username与全局数据username绑定,以在视图上读出
         redirectAttributes.addFlashAttribute("username1", username);
 
         User user = new User(username, password);
         User createdUser = userService.saveUser(user);
+
+        JWTUtil jwtUtil=new JWTUtil();
+        String jwt=jwtUtil.generateToken(username);
+
+        Cookie cookie=new Cookie("jwt",jwt);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        cookie.setSecure(true);
+        cookie.setMaxAge(60*60);
+        response.addCookie(cookie);
 
         return "redirect:/welcome";
     }
@@ -70,6 +89,7 @@ public class FormController {
                               HttpServletResponse response){
         //调用后端服务器的功能查询是否存在该用户
         if(userService.verifyLogin(username,password)) {
+            //添加flash属性以在重定向之后使用
             redirectAttributes.addFlashAttribute("username1", username);
 
             //创建JWT令牌

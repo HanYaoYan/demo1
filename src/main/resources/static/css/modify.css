@@ -1,0 +1,40 @@
+.modify {
+	border: 3px solid grey;
+	border-radius: 10px;
+	margin-top: 20px;
+	padding: 15px;
+	background-color: #FFF8DC;
+	box-shadow: 10px 10px 10px #666666;
+}
+.modify h1 {
+	font-size: 60px;
+	text-align: center;
+	padding-bottom:10px ;
+	margin-bottom: 10px;
+	border-bottom: 2px solid skyblue;
+}
+.re-form {
+	width: 350px;
+	margin:50px auto;
+}
+.re-form ul li {
+	margin-bottom: 20px;
+}
+.re-form ul li label {
+	width:100px;
+	display: inline-block;
+	text-align: right;
+}
+.re-form ul li .inp {
+	width: 242px;
+	height: 37px;
+	border: 1px solid #CCCCCC;
+}
+.btn {
+	width: 200px;
+	height: 34px;
+	background-color: #C81623;
+	font-size: 14px;
+	color: #FFFFFF;
+	margin: 30px 0 0 60px;
+}

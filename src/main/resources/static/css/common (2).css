@@ -1,0 +1,36 @@
+.w  {
+	width: 1200px;
+	margin: 0 auto;
+}
+.style_blue {
+	color: blue;
+}
+.style_red {
+	color: red;
+}
+
+.header {
+	position: relative;
+	height: 105px;
+}
+header {
+	height: 100px;
+	border-bottom: 2px solid #C81623;
+}
+.logo {
+	position: absolute;
+	top: 0px;
+	left: 30px;
+	width: 171px;
+	height: 105px;
+}
+.logo img {
+	height: 100%;
+}
+.log {
+	padding-top: 2px;
+}
+.log img {
+	height: 100px;
+	width: 100px;
+}
