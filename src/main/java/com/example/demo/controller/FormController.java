@@ -38,7 +38,7 @@ public class FormController {
      * @param model 由于绝大部分调用welcome时都是重定向，而每次重定向后model都是空，因此每次重定向前要将想保留的数据要么保存在flash中，要么保存在url中
      * @return
      */
-    @GetMapping("/welcome")
+    @GetMapping("/index")
     public String showWelcome(ModelMap model) {
         //从redirectAttributes中获取flash数据
         String username1=(String)model.getAttribute("username1");
@@ -104,7 +104,7 @@ public class FormController {
             cookie.setMaxAge(60 * 60); // 1小时有效
             response.addCookie(cookie); // 将 Cookie 添加到响应中
 
-            return "redirect:/welcome";
+            return "redirect:/index";
         }
         redirectAttributes.addFlashAttribute("error","用户名或密码错误,请重新输入");
         return "redirect:/Login_error";

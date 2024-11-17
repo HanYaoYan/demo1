@@ -1,6 +1,6 @@
 package com.example.demo.controller;
 
-import com.example.demo.Repository.ImageRepository;
+import com.example.demo.Repository.FileRepository;
 import com.example.demo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +21,7 @@ public class addingDataController {  // 确保类名的首字母大写
     @Autowired
     private UserService userService;
     @Autowired
-    private ImageRepository imageRepository;
+    private FileRepository fileRepository;
 
     @GetMapping("/add")
     public String showAddPage() {
@@ -60,7 +60,7 @@ public class addingDataController {  // 确保类名的首字母大写
             fileInfo.setURL(URL);
             fileInfo.setDate(Date);
             // 将文件信息保存到数据库
-            imageRepository.save(fileInfo);
+            fileRepository.save(fileInfo);
 
             // 返回成功消息作为JSON
             Map<String, String> response = new HashMap<>();

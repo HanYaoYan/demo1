@@ -1,29 +1,77 @@
 <!DOCTYPE html>
-<html>
-	<head>
-		<meta charset="UTF-8">
-		<title>查找</title>
-		<link rel="shortcut icon" href="img/favicon1.ico" />
-		<link rel="stylesheet" type="text/css" href="css/base.css" />
-		<link rel="stylesheet" type="text/css" href="css/common.css"/>
-		<link rel="stylesheet" type="text/css" href="css/search.css"/>
-	</head>
-	<body>
-		<header class="w">
-			<div class="log">
-				<a href="index.html"><img src="img/logo1.png" /></a>
-			</div>
-		</header>
-		<div class="search w clearfix">
-			<h1>查找</h1>
-			<form class="re-form">
-				<ul class="clearfix w">
-					<li><label>请输入原密码:</label><input type="text" id="username" class="inp" autocomplete="off" placeholder="请输入用户名" /></li>
-					<li><label>请输入新密码:</label><input type="password" id="password" class="inp" placeholder="请输入新密码" /></li>
-					<li><label>请再次输入原密码:</label><input type="password" id="repassword" class="inp" placeholder="请再次输入新密码" /></li>
-					<li><input type="button" value="确认" class="btn" /></li>
-				</ul>
-			</form>
-		</div>
-	</body>
+<html lang="zh">
+<head>
+	<meta charset="UTF-8">
+	<title>查找</title>
+	<link rel="shortcut icon" href="img/favicon1.ico" />
+	<link rel="stylesheet" type="text/css" href="css/base.css" />
+	<link rel="stylesheet" type="text/css" href="css/common.css"/>
+	<link rel="stylesheet" type="text/css" href="css/search.css"/>
+
+	<script>
+		function Search(event) {
+			event.preventDefault(); // 阻止默认表单提交
+			const form = document.querySelector('.re-form');
+			const searchbody = new FormData(form); // 收集表单数据
+
+			fetch('/search/data', {
+				method: 'POST',
+				body: searchbody
+			})
+					.then(response => {
+						if (!response.ok) {
+							throw new Error('网络响应失败');
+						}
+						return response.json(); // 解析为 JSON
+					})
+					.then(data => {
+						ShowSearchResult(data); // 调用显示结果的函数
+					})
+					.catch(error => {
+						console.error('Error:', error);
+						alert("查找失败");
+					});
+		}
+
+		function ShowSearchResult(data) {
+			const resultContainer = document.getElementById("searchResults");
+			resultContainer.style.display = 'block'; // 显示结果容器
+			resultContainer.innerHTML = ''; // 清空之前的结果
+
+			if (data.status === 'success') {
+				const info = `
+                    <p>文件名称: ${data.name}</p>
+                    <p>文件链接: <a href="${data.URL}" target="_blank">${data.URL}</a></p>
+                    <p>文件大小: ${data.size} bytes</p>
+                    <p>上传日期: ${data.date}</p>
+                `;
+				resultContainer.innerHTML = info; // 显示成功结果
+			} else {
+				resultContainer.innerHTML = `<p>${data.message}</p>`; // 显示错误消息
+			}
+		}
+	</script>
+</head>
+<body>
+<header class="w">
+	<div class="log">
+		<a href="index.html"><img src="img/logo1.png" alt="Logo" /></a>
+	</div>
+</header>
+<div class="search w clearfix">
+	<h1>查找</h1>
+	<form class="re-form" onsubmit="Search(event)">
+		<ul class="clearfix w">
+			<li>
+				<label>请输入要查找的文件名称:</label>
+				<input type="text" id="filename" name="filename" class="inp" autocomplete="off" placeholder="请输入要查找的文件名称" required />
+			</li>
+			<li>
+				<input type="submit" value="确认" class="btn"/>
+			</li>
+		</ul>
+	</form>
+	<div id="searchResults" class="results" style="display: none;"></div>
+</div>
+</body>
 </html>

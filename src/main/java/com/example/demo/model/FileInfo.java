@@ -1,8 +1,11 @@
 package com.example.demo.model;
 
+import com.example.demo.Repository.FileRepository;
+import com.example.demo.service.FileService;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @Entity
 @Table(name="Mulfile")
@@ -62,4 +65,5 @@ public class FileInfo {
     public void setName(String name) {
         this.name = name;
     }
+
 }

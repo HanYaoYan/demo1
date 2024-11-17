@@ -96,7 +96,9 @@
                 method: 'POST',
                 body: imageData
             })
+                //获取响应后对响应做出的操作
                 .then(response => response.json())
+                //获取json返回值对其做出的操作
                 .then(data => {
                     alert("上传成功！");
                     console.log(data);
