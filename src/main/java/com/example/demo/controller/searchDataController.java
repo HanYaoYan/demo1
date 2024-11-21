@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,18 +25,17 @@ public class searchDataController {
     }
 
     @PostMapping("/search/data")
-    public ResponseEntity<Map<String,String>> getSearchData(@RequestParam("filename") String name){
-        FileInfo fileinfo=fileService.fineByName(name);
-        Map<String,String> response=new HashMap<>();
-        if(fileinfo!=null){
+    public ResponseEntity<Map<String,String>> getSearchData(@RequestParam("filename") String name) {
+        Map<String, String> response = new HashMap<>();
+        try{
+            FileInfo fileinfo=fileService.findByName(name);
             response.put("status", "success");
-            response.put("name",fileinfo.getName());
+            response.put("name", fileinfo.getName());
             response.put("URL", fileinfo.getURL());
             response.put("size", String.valueOf(fileinfo.getSize()));
             response.put("date", fileinfo.getDate());
             return ResponseEntity.ok(response);
-        }
-        else{
+        }catch(FileNotFoundException e){
             // 如果未找到文件信息，构建失败响应
             response.put("status", "error");
             response.put("message", "文件未找到");

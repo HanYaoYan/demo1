@@ -13,14 +13,72 @@
 			<div class="log">
 				<a href="index.html"><img src="img/logo1.png" /></a>
 			</div>
+			<script>
+				function modifyData(event) {
+					event.preventDefault(); // 阻止表单默认提交行为
+
+					const form = document.querySelector('.re-form'); // 获取表单元素
+					const formData = new FormData(form); // 创建 FormData 对象
+
+					fetch("/modifyFile", { // 确保 URL 正确
+						method: "POST",
+						body: formData
+					})
+							.then(response => {
+								if (!response.ok) {
+									throw new Error('网络响应不是 OK');
+								}
+								return response.json(); // 解析 JSON 响应
+							})
+							.then(data => {
+								// 处理成功的响应数据
+								console.log(data);
+								alert(data.message); // 可以弹出消息
+							})
+							.catch(error => {
+								console.error('发生错误:', error);
+								alert('文件修改失败: ' + error.message); // 处理错误情况
+							});
+				}
+
+			function showDisplay(){
+				const modifyName = document.getElementsByName("newname")[0]; // 使用索引获取
+				const modifyFile = document.getElementsByName("newFile")[0]; // 使用索引获取
+				const mode = document.getElementsByName("modifymode")[0]; // 使用索引获取
+
+				if (mode.value === "File") {
+					modifyFile.style.display = "block"; // 显示 modifyFile 元素
+					modifyName.style.display = "none"; // 显示 modifyName 元素
+				} else {
+					modifyFile.style.display = "none"; // 隐藏 modifyFile 元素
+					modifyName.style.display = "block"; // 显示 modifyName 元素
+				}
+			}
+			</script>
 		</header>
 		<div class="modify w clearfix">
 			<h1>修改</h1>
-			<form class="re-form">
+			<form class="re-form" onsubmit=modifyData(event)>
 				<ul class="clearfix w">
-					<li><label>请输入文件旧名称:</label><input type="text" id="oldname" class="inp" autocomplete="off" placeholder="请输入旧名称" /></li>
-					<li><label>请输入文件新名称:</label><input type="text" id="newname" class="inp" placeholder="请输入新名称" /></li>
-					<li><input type="button" value="确认" class="btn" /></li>
+					<li><label>请输入文件旧名称:</label>
+						<input type="text" name="oldname" id="oldname" class="inp" autocomplete="off" placeholder="请输入旧名称" /></li>
+
+					<li><label>修改项</label>
+						<select id="modifymode" name="modifymode" class="inp" required onchange=showDisplay()>
+							<option value="">请选择修改项</option>
+							<option value="File">根据名字修改文件</option>
+							<option value="Name">修改旧名字</option>
+						</select>
+					</li>
+
+					<li>
+						<input type="text" name="newname" id="newname" class="inp" placeholder="请输入新名称" style="display: none"/>
+					</li>
+
+					<li>
+						<input type="file" name="newFile" id="newFile" class="inp" accept="/*" placeholder="请输入新文件"style="display: none" />
+					</li>
+					<li><input type="submit" value="确认" class="btn" /></li>
 				</ul>
 			</form>
 		</div>

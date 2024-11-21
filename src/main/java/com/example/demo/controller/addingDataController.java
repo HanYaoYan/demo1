@@ -70,7 +70,7 @@ public class addingDataController {  // 确保类名的首字母大写
             e.printStackTrace();
             // 返回错误消息作为JSON
             Map<String, String> errorResponse = new HashMap<>();
-            errorResponse.put("message", "图片上传失败: " + e.getMessage());
+            errorResponse.put("message", "文件上传失败: " + e.getMessage());
             return ResponseEntity.status(500).body(errorResponse);
         }
     }

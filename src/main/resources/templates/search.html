@@ -13,7 +13,7 @@
 			event.preventDefault(); // 阻止默认表单提交
 			const form = document.querySelector('.re-form');
 			const searchbody = new FormData(form); // 收集表单数据
-
+			form.reset();
 			fetch('/search/data', {
 				method: 'POST',
 				body: searchbody
@@ -25,11 +25,12 @@
 						return response.json(); // 解析为 JSON
 					})
 					.then(data => {
+
 						ShowSearchResult(data); // 调用显示结果的函数
 					})
 					.catch(error => {
+						ShowSearchResult({ status: 'error', message: '找不到文件！' });
 						console.error('Error:', error);
-						alert("查找失败");
 					});
 		}
 

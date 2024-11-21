@@ -1,27 +1,84 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="UTF-8">
-		<title>删除</title>
-		<link rel="shortcut icon" href="img/favicon1.ico" />
-		<link rel="stylesheet" type="text/css" href="css/base.css" />
-		<link rel="stylesheet" type="text/css" href="css/common.css"/>
-		<link rel="stylesheet" href="css/remove.css" />
-	</head>
-	<body>
-		<header class="w">
-			<div class="log">
-				<a href="index.html"><img src="img/logo1.png" /></a>
-			</div>
-		</header>
-		<div class="remove w clearfix">
-			<h1>删除</h1>
-			<form class="re-form">
-				<ul class="clearfix w">
-					<li><label>请输入要删除的文件名称:</label><input type="text" id="oldfile" class="inp" autocomplete="off" placeholder="请输入要删除的文件名称" /></li>
-					<li><input type="button" value="确认" class="btn" /></li>
-				</ul>
-			</form>
-		</div>
-	</body>
+<head>
+	<meta charset="UTF-8">
+	<title>删除</title>
+	<link rel="shortcut icon" href="img/favicon1.ico" />
+	<link rel="stylesheet" type="text/css" href="css/base.css" />
+	<link rel="stylesheet" type="text/css" href="css/common.css" />
+	<link rel="stylesheet" href="css/remove.css" />
+
+	<script>
+		function showRemoveResult(data) {
+			const form = document.getElementById("removeResult");
+			form.style.display = 'block';
+			form.innerHTML = '';
+
+			let info; // 声明 info 变量
+
+			if (data.status === 'success') {
+				info = `
+                    <p>删除文件成功！</p>
+                    <p>已删除文件：</p>
+                    <p>文件名：${data.name}</p>
+                    <p>文件链接：${data.url}</p>
+                    <p>文件大小：${data.size}</p>
+                    <p>上传日期：${data.date}</p>
+                `;
+			} else {
+				info = `
+                    <p>删除文件失败</p>
+                `;
+			}
+			form.innerHTML = info; // 在这里更新 innerHTML
+		}
+
+		function DeleteData(event) {
+			event.preventDefault();
+
+			const form = document.querySelector('.re-form');
+			const removeData = new FormData(form);
+			fetch('/remove', {
+				method: 'POST', // 确保方法为 POST
+				body: removeData
+			})
+					.then(response => response.json())
+					.then(data => {
+						showRemoveResult(data);
+						form.reset();
+					})
+					.catch(error => {
+						showRemoveResult({ status: 'error', message: '找不到文件！' });
+						console.error('Error:', error);
+					});
+		}
+
+		document.addEventListener('DOMContentLoaded', function() {
+			const form = document.querySelector('.re-form');
+			form.addEventListener('submit', DeleteData); // 使用事件监听器
+		});
+	</script>
+</head>
+<body>
+<header class="w">
+	<div class="log">
+		<a href="index.html"><img src="img/logo1.png" /></a>
+	</div>
+</header>
+<div class="remove w clearfix">
+	<h1>删除</h1>
+	<form class="re-form">
+		<ul class="clearfix w">
+			<li>
+				<label>请输入要删除的文件名称:</label>
+				<input name="oldfile" type="text" id="oldfile" class="inp" autocomplete="off" placeholder="请输入要删除的文件名称" />
+			</li>
+			<li>
+				<input type="submit" value="确认" class="btn" />
+			</li>
+		</ul>
+	</form>
+	<div id="removeResult" class="result" style="display: none"></div>
+</div>
+</body>
 </html>
