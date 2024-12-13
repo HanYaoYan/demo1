@@ -4,6 +4,7 @@ import com.example.demo.model.User;
 import com.example.demo.service.UserService;
 import com.example.demo.util.JWTUtil;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -39,7 +40,8 @@ public class FormController {
      * @return
      */
     @GetMapping("/index")
-    public String showWelcome(ModelMap model) {
+    public String showWelcome(ModelMap model, HttpServletRequest request) {
+
         //从redirectAttributes中获取flash数据
         String username1=(String)model.getAttribute("username1");
         //将其添加到model中以传递给视图
@@ -71,7 +73,7 @@ public class FormController {
         cookie.setMaxAge(60*60);
         response.addCookie(cookie);
 
-        return "redirect:/welcome";
+        return "redirect:/index";
     }
 
     /**

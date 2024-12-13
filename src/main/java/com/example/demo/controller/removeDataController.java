@@ -1,14 +1,16 @@
 package com.example.demo.controller;
 
-import com.example.demo.Repository.FileRepository;
 import com.example.demo.model.FileInfo;
 import com.example.demo.service.FileService;
+import com.example.demo.util.JWTUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import jakarta.servlet.http.HttpServletRequest;//new！！！
+import com.example.demo.util.AuthorizingUtil;//new!!!
 
 import java.io.FileNotFoundException;
 import java.util.Map;
@@ -23,11 +25,37 @@ public class removeDataController {
         return "remove";
     }
 
+
+
     @PostMapping("/remove")
-    public ResponseEntity<Map<String,String>> RemoveDataController(@RequestParam("oldfile") String name) throws FileNotFoundException {
+    public ResponseEntity<Map<String,String>> RemoveDataController(
+            @RequestParam("oldfile") String name,
+            HttpServletRequest request) throws FileNotFoundException {
+            //上面的new!!!!
+        //重构id
+        String username=AuthorizingUtil.getJwtUsername(request);
+        String Id=username+":"+name;
         Map<String, String> response = new HashMap<>();
         try {
-            FileInfo fileInfo = fileService.findByName(name);
+            FileInfo fileInfo = fileService.findByName(Id);
+
+            /*//new!!!
+            //没找到文件，你是不是漏了
+            if (fileInfo == null) {
+                response.put("message", "未找到文件: " + name);
+                return ResponseEntity.status(404).body(response);
+            }
+
+            //@begin new!!!
+            //验证找到的文件的权限
+            if (!AuthorizingUtil.judgeUser(fileInfo.getUser(),request)){
+                //返回什么错误信息，你决定决定,我这里随便写写
+                Map<String, String> errorResponse = new HashMap<>();
+                errorResponse.put("message","你没有操作该文件的权限");
+                return ResponseEntity.status(500).body(errorResponse);
+            }
+            //@end new!!!*/
+
             response.put("status", "success");
             response.put("name", fileInfo.getName());
             response.put("URL", fileInfo.getURL());

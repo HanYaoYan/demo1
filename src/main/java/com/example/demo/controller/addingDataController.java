@@ -1,7 +1,11 @@
 package com.example.demo.controller;
 
 import com.example.demo.Repository.FileRepository;
+import com.example.demo.service.FileService;
 import com.example.demo.service.UserService;
+import com.example.demo.util.JWTUtil;
+import com.example.demo.util.AuthorizingUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -12,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.example.demo.model.FileInfo;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,6 +27,8 @@ public class addingDataController {  // 确保类名的首字母大写
     private UserService userService;
     @Autowired
     private FileRepository fileRepository;
+    @Autowired
+    private FileService fileService;
 
     @GetMapping("/add")
     public String showAddPage() {
@@ -30,7 +37,12 @@ public class addingDataController {  // 确保类名的首字母大写
 
     @PostMapping("/add")
     public ResponseEntity<Map<String, String>> addImage
-            (@RequestParam("File") MultipartFile file,@RequestParam("dataName") String Id,@RequestParam("hiddenSubmitTime") String Date) {
+            (@RequestParam("File") MultipartFile file,
+             @RequestParam("dataName") String Id,
+             @RequestParam("hiddenSubmitTime") String Date,
+             HttpServletRequest request
+            ) {
+
         System.out.println("接收到的文件名: " + file.getOriginalFilename());
         System.out.println("接收到的文件大小: " + file.getSize());
 
@@ -54,13 +66,20 @@ public class addingDataController {  // 确保类名的首字母大写
 
             // 创建 ImageInfo 对象并设置元数据
             FileInfo fileInfo = new FileInfo();
+
+            //重新设计id
+            String username=AuthorizingUtil.getJwtUsername(request);
+            Id=username+":"+Id;
             fileInfo.setId(Id);
             fileInfo.setName(sanitizedFileName);
             fileInfo.setSize(file.getSize());
             fileInfo.setURL(URL);
             fileInfo.setDate(Date);
+            JWTUtil jwtUtil=new JWTUtil();
+            fileInfo.setUser(username);
+
             // 将文件信息保存到数据库
-            fileRepository.save(fileInfo);
+            fileService.saveFile(fileInfo);
 
             // 返回成功消息作为JSON
             Map<String, String> response = new HashMap<>();
@@ -73,6 +92,7 @@ public class addingDataController {  // 确保类名的首字母大写
             errorResponse.put("message", "文件上传失败: " + e.getMessage());
             return ResponseEntity.status(500).body(errorResponse);
         }
+
     }
 
 }

@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import com.example.demo.util.AuthorizingUtil;//new!!!
+import jakarta.servlet.http.HttpServletRequest;//new!!!
 
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
@@ -30,18 +32,36 @@ public class ModifyDataController {
     public ResponseEntity<Map<String, String>> modifyFileController(
             @RequestParam(value = "newFile", required = false) MultipartFile newFile,
             @RequestParam(value = "newname", required = false) String newname,
-            @RequestParam("oldname") String oldname) {
+            @RequestParam("oldname") String oldname,
+            HttpServletRequest request) {
 
         Date now = new Date();
         Map<String, String> response = new HashMap<>();
 
+        //重新设计新旧id，id的样式为“用户姓名：文件名字”
+        String username=AuthorizingUtil.getJwtUsername(request);
+        String oldId=username+":"+oldname;
+        String newId = username +":"+newname;
+
         try {
-            FileInfo oldFile = fileService.findByName(oldname);
-            if (oldFile == null) {
-                response.put("message", "未找到文件: " + oldname);
+            //查找旧文件
+            FileInfo oldFile = fileService.findByName(oldId);
+           /* if (oldFile == null) {
+                response.put("message", "未找到文件或你没有操作该文件的权力: ");
                 return ResponseEntity.status(404).body(response);
             }
 
+            //@begin new!!!
+            //验证找到的文件的权限
+            if (!AuthorizingUtil.judgeUser(oldFile.getUser(),request)){
+                //返回什么错误信息，你决定决定,我这里随便写写
+                Map<String, String> errorResponse = new HashMap<>();
+                errorResponse.put("message","你没有操作该文件的权力");
+                return ResponseEntity.status(404).body(errorResponse);
+            }
+            //@end new!!!*/
+
+            //更新文件信息
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             String formattedDate = dateFormat.format(now);
             oldFile.setDate(formattedDate);
@@ -49,15 +69,16 @@ public class ModifyDataController {
             if (newFile != null && !newFile.isEmpty()) {
                 oldFile.setSize(newFile.getSize());
                 oldFile.setName(newFile.getOriginalFilename());
-
+                oldFile.setId(newId);
             }
 
             if (newname != null && !newname.isEmpty()) {
-                oldFile.setId(newname);
+                oldFile.setId(newId);
+                oldFile.setName(newname);
             }
 
             // 更新文件信息
-            fileService.deleteByName(oldname); // 删除原先的文件记录
+            fileService.deleteByName(oldId); // 删除原先的文件记录
             fileService.saveFile(oldFile); // 保存更新后的文件信息
 
             response.put("message", "文件已更新至: " + oldFile.getURL());

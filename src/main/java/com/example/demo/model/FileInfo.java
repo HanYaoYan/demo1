@@ -1,22 +1,34 @@
 package com.example.demo.model;
 
-import com.example.demo.Repository.FileRepository;
-import com.example.demo.service.FileService;
+import com.example.demo.util.AuthorizingUtil;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.servlet.http.HttpServletRequest;
+
+import static com.example.demo.util.AuthorizingUtil.getJwtUsername;
 
 @Entity
 @Table(name="Mulfile")
 public class FileInfo {
     @Id
     private String Id;
+
     private String name;
     private String URL;
     private long size;
     private String Date;
 
+
+    public String getUser() {
+        return User;
+    }
+
+    public void setUser(String user) {
+        User = user;
+    }
+
+    private String User;
     public String getDate() {
         return Date;
     }

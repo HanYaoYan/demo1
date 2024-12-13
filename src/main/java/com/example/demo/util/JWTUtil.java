@@ -1,100 +1,67 @@
 package com.example.demo.util;
-/**
- * 这是一个生产Jwts令牌的工具类, 包含功能
- * 1. generatetoken() 接受主题并产生返回一个jwts令牌(字符串)
- * 2. claims() 用于接受令牌并返回一个claims类(该类可用于解析jwts类)
- * 3. extractUsername() 接受jwt令牌并提取他的用户名
- * 4. isTokenExpired() 接受jwts令牌并验证是否失效
- * 5. validateToken() 接受jwts令牌并验证是否不可用
- */
+
 import javax.crypto.spec.SecretKeySpec;
 import javax.crypto.SecretKey;
-
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.stereotype.Component;
 
-import java.nio.charset.StandardCharsets;
-import java.security.SecureRandom;
 import java.util.Base64;
 import java.util.Date;
-//
+
+/**
+ * 这是一个生产JWT令牌的工具类, 包含功能
+ * 1. generateToken() 接受主题并产生返回一个JWT令牌(字符串)
+ * 2. extractClaims() 用于接受令牌并返回一个Claims类(该类可用于解析JWT)
+ * 3. extractUsername() 接受JWT令牌并提取他的用户名
+ * 4. isTokenExpired() 接受JWT令牌并验证是否失效
+ * 5. validateToken() 接受JWT令牌并验证是否有效
+ */
 @Component
 public class JWTUtil {
-    private static final int KEY_SIZE = 256; // 使用复杂的随机密钥,此处需要调用另一个产生随机数的密钥函数
-    private  String SECRET_KEY;
+    private static final String SECRET_KEY = "sfsfsdffvsdvewwefqefafasasdadsadadqawcascasdasdascascascascadwdafawdasscasascasascasdqw"; // 使用一个256位的密钥
+    private static final long EXPIRATION_TIME = 1000 * 60 * 60; // 1小时的过期时间
 
-    public JWTUtil(){
-        SECRET_KEY=generateSecretKey();
-    }
-    /**
-     * 这是一个Secret_Key生成类,用安全随机数生成了256位的secret_Key
-     * @return
-     */
-    public static String generateSecretKey(){
-        SecureRandom secureRandom=new SecureRandom();
-        byte[] key = new byte[KEY_SIZE/8];
-        secureRandom.nextBytes(key);
-        return Base64.getUrlEncoder().withoutPadding().encodeToString(key);
-    }
-    /**
-     *该函数用于接收导入的用户数据,为其生成一个JWT令牌
-     * @param username 在控制器中接收主题
-     * @return 返回jwt令牌
-     */
+    // 生成JWT令牌
     public String generateToken(String username) {
-        long expirationTime = 1000 * 60 * 60; // 设置有效时间为1小时
-        Date now = new Date();
-        Date expirationDate = new Date(now.getTime() + expirationTime);
+        SecretKey secretKey = new SecretKeySpec(Base64.getDecoder().decode(SECRET_KEY), SignatureAlgorithm.HS256.getJcaName());
 
-        byte[] key=SECRET_KEY.getBytes(StandardCharsets.UTF_8);
-        SecretKey secretKey=new SecretKeySpec(key,"HmacSHA256");
+        Date now = new Date();
+        Date expirationDate = new Date(now.getTime() + EXPIRATION_TIME);
+
         return Jwts.builder()
                 .setSubject(username)
                 .setIssuedAt(now)
-                .signWith(secretKey)
                 .setExpiration(expirationDate)
+                .signWith(secretKey)
                 .compact();
     }
 
-    /**
-     * 该函数用于从一个给定的jwt令牌中提取claims信息
-     * @param token 接收令牌
-     * @return 返回一个Claims类,里面包含了Jwts的所有声明信息
-     */
+    // 从JWT令牌中提取Claims信息
     private Claims extractClaims(String token) {
-        return Jwts.parser()//创建一个解析器
-                .setSigningKey(SECRET_KEY)//验证密钥
-                .parseClaimsJws(token)//验证签名并提取有效负载部分,成功后会返回Jwts<Claims>对象
+        SecretKey secretKey = new SecretKeySpec(Base64.getDecoder().decode(SECRET_KEY), SignatureAlgorithm.HS256.getJcaName());
+        return Jwts.parser()
+                .setSigningKey(secretKey)
+                .parseClaimsJws(token)
                 .getBody();
     }
 
-    /**
-     * 调用Claim供给,取令牌中的主题名字
-     * @param token 传入一个Jwts令牌
-     * @return 返回一个用户名字符串
-     */
+    // 提取JWT中的用户名
     public String extractUsername(String token) {
-        return extractClaims(token).getSubject();
+        Claims claims = extractClaims(token);
+        return claims.getSubject();
     }
 
-    /**
-     * 提取Jwts的失效时间,进行验证,其中extractClaims(token).getExpiration()返回了一个Date类
-     * @param token 传入应该Jwts令牌
-     * @return 返回一个布尔值,代表是否失效
-     */
+    // 检查JWT是否过期
     private boolean isTokenExpired(String token) {
-        return extractClaims(token).getExpiration().before(new Date());
+        Claims claims = extractClaims(token);
+        return claims.getExpiration().before(new Date());
     }
 
-    /**
-     * 该函数用来验证该令牌是否仍然有效
-     * @param token 传入的令牌
-     * @param username 用户名
-     * @return 一个布尔值,表示是否有效
-     */
+    // 验证JWT令牌
     public boolean validateToken(String token, String username) {
-        return (extractUsername(token).equals(username) && !isTokenExpired(token));
+        String extractedUsername = extractUsername(token);
+        return (extractedUsername.equals(username) && !isTokenExpired(token));
     }
 }

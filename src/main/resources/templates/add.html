@@ -100,7 +100,7 @@
                 .then(response => response.json())
                 //获取json返回值对其做出的操作
                 .then(data => {
-                    alert("上传成功！");
+                    alert("文件已保存\n"+data);
                     console.log(data);
                     form.reset(); // 清空表单
                 })

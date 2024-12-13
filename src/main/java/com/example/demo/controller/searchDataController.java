@@ -2,6 +2,8 @@ package com.example.demo.controller;
 
 import com.example.demo.model.FileInfo;
 import com.example.demo.service.FileService;
+import com.example.demo.util.AuthorizingUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -25,10 +27,17 @@ public class searchDataController {
     }
 
     @PostMapping("/search/data")
-    public ResponseEntity<Map<String,String>> getSearchData(@RequestParam("filename") String name) {
+    public ResponseEntity<Map<String,String>> getSearchData(
+            @RequestParam("filename") String name,
+            HttpServletRequest request
+    ) {
+        //重构id
+        String username= AuthorizingUtil.getJwtUsername(request);
+        String Id=username+":"+name;
+
         Map<String, String> response = new HashMap<>();
         try{
-            FileInfo fileinfo=fileService.findByName(name);
+            FileInfo fileinfo=fileService.findByName(Id);
             response.put("status", "success");
             response.put("name", fileinfo.getName());
             response.put("URL", fileinfo.getURL());
