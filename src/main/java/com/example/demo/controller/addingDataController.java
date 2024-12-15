@@ -20,6 +20,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 @Controller
 public class addingDataController {  // 确保类名的首字母大写
@@ -47,8 +48,17 @@ public class addingDataController {  // 确保类名的首字母大写
         System.out.println("接收到的文件大小: " + file.getSize());
 
         // 确保路径存在
-        String directoryPath = "D:\\java\\demo1\\upload_image"; // 使用绝对路径
+        /*String directoryPath = "D:\\java\\demo1\\upload_image"; // 使用绝对路径*/
+        /*String directoryPath = "../upload_image"; // 相对路径*/
+        /*String directoryPath = Objects.requireNonNull(getClass().getClassLoader().getResource("upload_image")).getPath();//更高级的绝对路径*/
+        // 获取项目目录
+        String projectDir = System.getProperty("user.dir"); // 获取当前工作目录，也就是项目根目录
+        String directoryPath = projectDir + File.separator + "upload_image"; // 定义上传目录路径
         File directory = new File(directoryPath);
+
+        //重新设计id
+        String username=AuthorizingUtil.getJwtUsername(request);
+        Id=username+":"+Id;
 
         // 确保目录存在
         if (!directory.exists()) {
@@ -59,40 +69,45 @@ public class addingDataController {  // 确保类名的首字母大写
         String sanitizedFileName = file.getOriginalFilename();
         String URL = directoryPath + "\\" + sanitizedFileName; // 使用反斜杠
 
-        try {
-            // 保存文件
-            System.out.println("准备保存文件: " + URL);
-            file.transferTo(new File(URL));
+        //查找是否有同名文件
+        try{
+            fileService.findByName(Id);
+        } catch (FileNotFoundException a) {
+            try {
+                // 保存文件
+                System.out.println("准备保存文件: " + URL);
+                file.transferTo(new File(URL));
 
-            // 创建 ImageInfo 对象并设置元数据
-            FileInfo fileInfo = new FileInfo();
+                // 创建 ImageInfo 对象并设置元数据
+                FileInfo fileInfo = new FileInfo();
 
-            //重新设计id
-            String username=AuthorizingUtil.getJwtUsername(request);
-            Id=username+":"+Id;
-            fileInfo.setId(Id);
-            fileInfo.setName(sanitizedFileName);
-            fileInfo.setSize(file.getSize());
-            fileInfo.setURL(URL);
-            fileInfo.setDate(Date);
-            JWTUtil jwtUtil=new JWTUtil();
-            fileInfo.setUser(username);
 
-            // 将文件信息保存到数据库
-            fileService.saveFile(fileInfo);
+                fileInfo.setId(Id);
+                fileInfo.setName(sanitizedFileName);
+                fileInfo.setSize(file.getSize());
+                fileInfo.setURL(URL);
+                fileInfo.setDate(Date);
+                JWTUtil jwtUtil = new JWTUtil();
+                fileInfo.setUser(username);
 
-            // 返回成功消息作为JSON
-            Map<String, String> response = new HashMap<>();
-            response.put("message", "图片已上传至: " + fileInfo.getURL());
-            return ResponseEntity.ok(response);
-        } catch (IOException e) {
-            e.printStackTrace();
-            // 返回错误消息作为JSON
-            Map<String, String> errorResponse = new HashMap<>();
-            errorResponse.put("message", "文件上传失败: " + e.getMessage());
-            return ResponseEntity.status(500).body(errorResponse);
+                // 将文件信息保存到数据库
+                fileService.saveFile(fileInfo);
+
+                // 返回成功消息作为JSON
+                Map<String, String> response = new HashMap<>();
+                response.put("message", "图片已上传至: " + fileInfo.getURL());
+                return ResponseEntity.ok(response);
+            } catch (IOException e) {
+                e.printStackTrace();
+                // 返回错误消息作为JSON
+                Map<String, String> errorResponse = new HashMap<>();
+                errorResponse.put("message", "文件上传失败: " + e.getMessage());
+                return ResponseEntity.status(500).body(errorResponse);
+            }
         }
-
+        Map<String, String> errorResponse = new HashMap<>();
+        errorResponse.put("message", "文件上传失败: 名字已被占用");
+        return ResponseEntity.status(500).body(errorResponse);
     }
 
 }

@@ -56,16 +56,25 @@ public class removeDataController {
             }
             //@end new!!!*/
 
+            //检查jwt是否有效
+            JWTUtil jwtUtil=new JWTUtil();
+            //检查jwt是否有效
+            if(!jwtUtil.validateToken(AuthorizingUtil.getJwtFromCookies(request),username)){
+                response.put("message","会话已无效，请重新登录");
+                return ResponseEntity.status(500).body(response);
+            }
+
+            //构建响应体，删除文件
             response.put("status", "success");
             response.put("name", fileInfo.getName());
             response.put("URL", fileInfo.getURL());
             response.put("size", String.valueOf(fileInfo.getSize()));
             response.put("date", fileInfo.getDate());
-            fileService.deleteByName(name);
+            fileService.deleteByName(Id);
             return ResponseEntity.status(200).body(response);
         } catch (FileNotFoundException e) {
             System.out.println("文件找不到" + e.getMessage());
-            response.put("statue","error");
+            response.put("status","error");
             response.put("message","找不到文件");
             return ResponseEntity.status(404).body(response);
         }

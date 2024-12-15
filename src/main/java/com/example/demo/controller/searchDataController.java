@@ -3,6 +3,7 @@ package com.example.demo.controller;
 import com.example.demo.model.FileInfo;
 import com.example.demo.service.FileService;
 import com.example.demo.util.AuthorizingUtil;
+import com.example.demo.util.JWTUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -38,6 +39,14 @@ public class searchDataController {
         Map<String, String> response = new HashMap<>();
         try{
             FileInfo fileinfo=fileService.findByName(Id);
+
+            JWTUtil jwtUtil=new JWTUtil();
+            //检查jwt是否有效
+            if(!jwtUtil.validateToken(AuthorizingUtil.getJwtFromCookies(request),username)){
+                response.put("message","会话已无效，请重新登录");
+                return ResponseEntity.status(500).body(response);
+            }
+
             response.put("status", "success");
             response.put("name", fileinfo.getName());
             response.put("URL", fileinfo.getURL());

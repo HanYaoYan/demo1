@@ -20,7 +20,11 @@
 			})
 					.then(response => {
 						if (!response.ok) {
-							throw new Error('网络响应失败');
+							//当后档返回错误时，自有一条then链
+							return response.json().then(errData => {
+								// 抛出包含后端消息的错误
+								throw new Error(errData.message || '服务器错误');
+							});
 						}
 						return response.json(); // 解析为 JSON
 					})
@@ -29,7 +33,7 @@
 						ShowSearchResult(data); // 调用显示结果的函数
 					})
 					.catch(error => {
-						ShowSearchResult({ status: 'error', message: '找不到文件！' });
+						ShowSearchResult({ status: error.status, message:error.message });
 						console.error('Error:', error);
 					});
 		}

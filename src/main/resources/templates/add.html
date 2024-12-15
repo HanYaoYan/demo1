@@ -97,15 +97,26 @@
                 body: imageData
             })
                 //获取响应后对响应做出的操作
-                .then(response => response.json())
+                .then(
+                    response => {
+                        if (!response.ok) {
+                            //当后档返回错误时，自有一条then链
+                            return response.json().then(errData => {
+                                // 抛出包含后端消息的错误
+                                throw new Error(errData.message || '服务器错误');
+                            });
+                        }
+                        return response.json();
+                    }) // 解析 JSON 响应
                 //获取json返回值对其做出的操作
                 .then(data => {
-                    alert("文件已保存\n"+data);
+                    alert(data.message);
                     console.log(data);
                     form.reset(); // 清空表单
                 })
                 .catch(error => {
-                    console.error('Error:', error);
+                    alert(error.message);
+                    console.error('Error:', error.message);
                     alert('上传失败，请重试');
                 });
 

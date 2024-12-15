@@ -15,7 +15,7 @@ public class AuthorizingUtil {
     /**
      * 从Cookies里面得到此时用户的JWT
      */
-    private static String getJwtFromCookies(HttpServletRequest request){
+    public static String getJwtFromCookies(HttpServletRequest request){
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
             for (Cookie cookie : cookies) {
